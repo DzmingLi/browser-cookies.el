@@ -1,0 +1,50 @@
+#+title: browser-cookies.el
+
+Read cookies for an HTTP(S) URL directly from an explicitly selected browser
+profile.  The package is intended for Emacs clients that need to reuse an
+existing browser login without copying browser-specific SQLite logic into each
+client.
+
+* Status
+
+The initial release supports Firefox (including exact Multi-Account Container
+selection) and Chromium-family browsers on GNU/Linux.  Chromium v10/v11
+cookies use the same Secret Service/KWallet key lookup as the browser.  The
+package never scans for profiles: account selection remains explicit.
+
+* Usage
+
+#+begin_src emacs-lisp
+(setq browser-cookies-browser 'firefox
+      browser-cookies-profile-directory
+      "~/.config/mozilla/firefox/default/")
+
+(browser-cookies-get "https://www.zhihu.com/")
+;; => (("cookie-name" . "cookie-value") ...)
+
+(browser-cookies-header "https://www.zhihu.com/")
+;; => "cookie-name=cookie-value; ..."
+#+end_src
+
+A caller may avoid global configuration:
+
+#+begin_src emacs-lisp
+(browser-cookies-get
+ "https://www.douban.com/"
+ :browser 'firefox
+ :profile-directory "/path/to/profile/"
+ :origin-attributes "^userContextId=2")
+#+end_src
+
+* Security
+
+Cookie values are credentials.  This package does not log them, persist a
+second cookie jar, or send network requests.  Callers decide where cookies are
+sent.  The live SQLite database is attached read-only; a private temporary
+database/WAL snapshot is used only when direct reading fails and is deleted
+immediately afterwards.
+
+* License
+
+GNU General Public License, version 3 or later.  This matches the license of
+the packages from which the shared implementation was extracted.

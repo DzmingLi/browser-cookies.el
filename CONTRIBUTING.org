@@ -1,0 +1,9 @@
+#+title: Contributing to browser-cookies.el
+
+Please keep the public API independent of any particular website.  Browser
+backends must select cookies as the browser would for a complete URL and must
+not guess a user's profile or container.
+
+Every behavior change needs an offline ERT test using a temporary database.
+Tests must never inspect a contributor's real browser profile or print cookie
+values.
